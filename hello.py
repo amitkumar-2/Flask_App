@@ -10,7 +10,7 @@ def index():
 # local host:500/user/ravi
 @app.route('/user/<name>')
 def user(name):
-    return f"<h1>Hello {name}</h1>"
+    return render_template("user.html", name=name)
 
 # create Custom Error Pages
 
