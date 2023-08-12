@@ -2,10 +2,32 @@ from flask import Flask, render_template, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 # Create a flask Instance
 app = Flask(__name__)
+# Add database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_ravi:user_ravi@54.175.148.134/mydb'
+# Secret Key
 app.config['SECRET_KEY'] = "This is my super secret key"
+
+# Initialize the database
+db = SQLAlchemy(app)
+
+# Create Model
+class Users(db.Model):
+    id = db.Column(db.Integer(), primary_key=True,) 
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200), nullable=False, unique=True)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Create A String
+    def __repr__(self):
+        return '<Name %r>' % self.name
+
+
+
 
 # create a form class
 class NamerForm(FlaskForm):
@@ -54,4 +76,6 @@ def name():
 
 
 if __name__=="__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
