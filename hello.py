@@ -28,11 +28,38 @@ class Users(db.Model):
 
 
 
+# create a form class
+class UserForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 # create a form class
 class NamerForm(FlaskForm):
     name = StringField("What's your name", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+@app.route("/user/add", methods = ['GET', 'POST'])
+def add_user():
+    name = None
+    form = UserForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = Users(name=form.name.data, email=form.email.data)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        print(name)
+        form.name.data = ''
+        form.email.data = ''
+        flash("From submited successfully!")
+    our_users = Users.query.order_by(Users.id)
+    return render_template("add_user.html",
+                            form=form,
+                            name = name,
+                            our_users = our_users)
 
 # Create a route decorator
 @app.route('/')
