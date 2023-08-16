@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash
+from flask import Flask, render_template, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
@@ -43,6 +43,9 @@ class NamerForm(FlaskForm):
 @app.route("/user/add", methods = ['GET', 'POST'])
 def add_user():
     name = None
+    if request.method == 'POST':
+        print(request.form)
+        return request.form
     form = UserForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
