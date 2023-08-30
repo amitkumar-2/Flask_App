@@ -8,12 +8,15 @@ from datetime import datetime
 # Create a flask Instance
 app = Flask(__name__)
 # Add database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_ravi:user_ravi@54.175.148.134/mydb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_ravi:user_ravi@54.175.148.134/mydb1'
 # Secret Key
 app.config['SECRET_KEY'] = "This is my super secret key"
 
 # Initialize the database
 db = SQLAlchemy(app)
+
+
+
 
 # Create Model
 class Users(db.Model):
@@ -33,6 +36,30 @@ class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     submit = SubmitField("Submit")
+    
+#update database record
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    form = UserForm()
+    name_to_update = Users.query.get_or_404(id)
+    if request.method == "POST":
+        name_to_update.name = request.form['name']
+        name_to_update.email = request.form['email']
+        try:
+            db.session.commit()
+            flash("User updated successfully")
+            return render_template("update.html",
+                                   form = form,
+                                   name_to_update = name_to_update)
+        except:
+            flash('Error in updating user')
+            return render_template("update.html",
+                                   form = form,
+                                   name_to_update = name_to_update)
+    else:
+        return render_template("update.html",
+                                   form = form,
+                                   name_to_update = name_to_update)
 
 # create a form class
 class NamerForm(FlaskForm):
@@ -43,9 +70,9 @@ class NamerForm(FlaskForm):
 @app.route("/user/add", methods = ['GET', 'POST'])
 def add_user():
     name = None
-    if request.method == 'POST':
-        print(request.form)
-        return request.form
+    # if request.method == 'POST':
+        # print(request.form)
+        # return request.form
     form = UserForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
