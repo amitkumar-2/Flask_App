@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from datetime import datetime
 
 # Create a flask Instance
@@ -15,6 +16,8 @@ app.config['SECRET_KEY'] = "This is my super secret key"
 # Initialize the database
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
+
 
 
 
@@ -23,6 +26,7 @@ class Users(db.Model):
     id = db.Column(db.Integer(), primary_key=True,) 
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
+    favorite_color = db.Column(db.String(120))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Create A String
@@ -35,6 +39,7 @@ class Users(db.Model):
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
+    favorite_color = StringField("Favorite color")
     submit = SubmitField("Submit")
     
 #update database record
@@ -45,6 +50,7 @@ def update(id):
     if request.method == "POST":
         name_to_update.name = request.form['name']
         name_to_update.email = request.form['email']
+        name_to_update.favorite_color = request.form['favorite_color']
         try:
             db.session.commit()
             flash("User updated successfully")
@@ -77,13 +83,14 @@ def add_user():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
-            user = Users(name=form.name.data, email=form.email.data)
+            user = Users(name=form.name.data, email=form.email.data, favorite_color=form.favorite_color.data)
             db.session.add(user)
             db.session.commit()
         name = form.name.data
         print(name)
         form.name.data = ''
         form.email.data = ''
+        form.favorite_color.data = ''
         flash("From submited successfully!")
     our_users = Users.query.order_by(Users.id)
     return render_template("add_user.html",
@@ -136,3 +143,12 @@ if __name__=="__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+    
+    
+# to create venv set the system permission
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Default
+
+# initializing db and migrating and upgrading db
+# flask db migrate -m "meassage"
+# flask db init
+# flask db upgrade
