@@ -1,0 +1,4 @@
+1.   Error: Could not locate a Flask application. Use the 'flask --app' option, 'FLASK_APP' environment variable, or a 'wsgi.py' or 'app.py' file in the current directory.   ========>>>>>>>>    $env:FLASK_APP = "yourapp.py",    flask --app yourapp.py db init
+
+
+2.   Commands to migrate db ======>>>>  -- flask db init,  -- flask db migrate -m "message", -- flask db upgrade
