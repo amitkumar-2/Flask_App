@@ -2,3 +2,5 @@
 
 
 2.   Commands to migrate db ======>>>>  -- flask db init,  -- flask db migrate -m "message", -- flask db upgrade
+
+3. Seeting virtual Environment ======>>>>>>  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass,  .\virt\Scripts\Activate,  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Default
