@@ -105,6 +105,12 @@ def update(id):
                                    id=id)
 
 # create a form class
+class PasswordForm(FlaskForm):
+    email = StringField("What's your email", validators=[DataRequired()])
+    password_hash = PasswordField("What's your password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+# create a form class
 class NamerForm(FlaskForm):
     name = StringField("What's your name", validators=[DataRequired()])
     submit = SubmitField("Submit")
@@ -158,6 +164,39 @@ def page_not_found(e):
 def server_error(e):
     return render_template("500.html")
 
+# create password test page
+@app.route("/test_pw", methods=["GET", "POST"])
+def test_pw():
+    email = None
+    password = None
+    pw_to_check = None
+    passed = None
+    form = PasswordForm()
+    
+    # Validate form
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password_hash.data
+        print(form.submit.type)
+        form.email.data = ''
+        form.password_hash.data = ''
+        
+        # user details from database
+        pw_to_check = Users.query.filter_by(email=email).first()
+        
+        # check hashed password
+        passed = check_password_hash(pw_to_check.password_hash, password)
+        
+        # flash("From submited successfully!")
+        
+    return render_template('test_pw.html',
+                           email = email,
+                           password = password,
+                           pw_to_check = pw_to_check,
+                           passed = passed,
+                           form = form)
+
+# create name page
 @app.route("/name", methods=["GET", "POST"])
 def name():
     name = None
