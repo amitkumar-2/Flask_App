@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, EqualTo, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, date
 
 # Create a flask Instance
 app = Flask(__name__)
@@ -20,6 +20,15 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
+@app.route("/date")
+def get_current_data():
+    favorite_color = {
+        "john": "Pepperoni",
+        "Mary": "Cheese",
+        "Time": "Mushroom"
+    }
+    return favorite_color
+    # return {"Date": date.today()}
 
 
 # Create Model
