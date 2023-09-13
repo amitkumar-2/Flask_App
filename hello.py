@@ -21,6 +21,57 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
+# Flask_Login Stuff
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
+
+# Create Login Form
+class LoginForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+# Create login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username = form.username.data).first()
+        if user:
+            # check the hash
+            if check_password_hash(user.password_hash, form.password.data):
+                login_user(user)
+                flash("Login Successfull!!")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Wrong password try again!")
+        else:
+            flash("That user doesn't Exits! Try Again...")
+            
+    return render_template('login.html', form=form)
+
+# Create Logout Page
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    flash("You Have been Loged out!  Thanks for stopping Bye...")
+    return redirect(url_for('login'))
+
+# Create dashboard page
+@app.route('/dashboard', methods=['GET', 'POST'])
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+
 
 # Create a Blog Post model
 class Posts(db.Model):
