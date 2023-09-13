@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from wtforms.widgets import TextArea
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
 # Create a flask Instance
 app = Flask(__name__)
@@ -131,8 +132,9 @@ def get_current_data():
 
 
 # Create Model
-class Users(db.Model):
-    id = db.Column(db.Integer(), primary_key=True,) 
+class Users(db.Model, UserMixin):
+    id = db.Column(db.Integer(), primary_key=True,)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
     favorite_color = db.Column(db.String(120))
@@ -180,6 +182,7 @@ def delete(id):
 # create a form class
 class UserForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
     favorite_color = StringField("Favorite color")
     password_hash = PasswordField("password", validators=[DataRequired(), EqualTo('password_hash2', message='Password Must Match!')])
@@ -235,12 +238,13 @@ def add_user():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
             hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
-            user = Users(name=form.name.data, email=form.email.data, favorite_color=form.favorite_color.data, password_hash=hashed_pw)
+            user = Users(username=form.username.data, name=form.name.data, email=form.email.data, favorite_color=form.favorite_color.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
         name = form.name.data
         print(name)
         form.name.data = ''
+        form.username.data = ''
         form.email.data = ''
         form.favorite_color.data = ''
         form.password_hash  = ''
