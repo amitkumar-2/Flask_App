@@ -5,6 +5,7 @@
 
 3. Seeting virtual Environment ======>>>>>>  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass,  .\virt\Scripts\Activate,  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Default
 
+4. To initialize virtual environment =======>>>>>>> python3 -m venv env
 
 
 
