@@ -123,6 +123,7 @@ def post(id):
     return  render_template('post.html', post=post)
 
 @app.route("/posts/edit/<int:id>", methods=['POST', 'GET'])
+@login_required
 def edit_post(id):
     post = Posts.query.get_or_404(id)
     form = PostForm()

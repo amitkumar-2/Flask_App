@@ -9,38 +9,49 @@
         </div>
     {% endfor %}
 
+{% if current_user.is_authenticated %}
     
-        <h1>Add Blog Post...</h1>
-        <br>
-        <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
-        <form method="POST">
-            {{ form.hidden_tag() }}
+<h1>Add Blog Post...</h1>
+<br>
+<div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+<form method="POST">
+    {{ form.hidden_tag() }}
 
-            {{ form.title.label(class="form-label") }}
-            {{ form.title(class="form-control") }}
-            <br>
-            {{ form.author.label(class="form-label") }}
-            {{ form.author(class="form-control") }}
-            <br>
-            {{ form.slug.label(class="form-label") }}
-            {{ form.slug(class="form-control") }}
-            <br>
-            {{ form.content.label(class="form-label") }}
-            {{ form.content(class="form-control", rows="5") }}
-            <br>
-            {{ form.submit(class="btn btn-secondary") }}
-        </form>
-        </div>
-        <p id="demo">This is stuff...</p>
-        <br><br><br>
-        <table class="table table-hover table-bordered table-striped">
-            {% for our_user in our_users %}
-            <tr>
-            <td>{{ our_user.id }}. <a href="{{url_for('update', id=our_user.id)}}">{{ our_user.name }}</a> - {{ our_user.email }} - {{ our_user.favorite_color }} - PW: {{ our_user.password_hash }} - <a href="{{url_for('delete', id=our_user.id)}}">Delete</a>
-            </td>
-            </tr>
-            {% endfor %}
-        </table>
+    {{ form.title.label(class="form-label") }}
+    {{ form.title(class="form-control") }}
+    <br>
+    {{ form.author.label(class="form-label") }}
+    {{ form.author(class="form-control") }}
+    <br>
+    {{ form.slug.label(class="form-label") }}
+    {{ form.slug(class="form-control") }}
+    <br>
+    {{ form.content.label(class="form-label") }}
+    {{ form.content(class="form-control", rows="5") }}
+    <br>
+    {{ form.submit(class="btn btn-secondary") }}
+</form>
+</div>
+
+{% else %}
+
+<h2>Must Be Logged In...</h2>
+<p>Sorry, You must be logged in to access this page!</p>
+
+<a href="{{ url_for('login') }}">Login Here</a>
+
+{% endif %}
+
+<p id="demo">This is stuff...</p>
+<br><br><br>
+<table class="table table-hover table-bordered table-striped">
+    {% for our_user in our_users %}
+    <tr>
+    <td>{{ our_user.id }}. <a href="{{url_for('update', id=our_user.id)}}">{{ our_user.name }}</a> - {{ our_user.email }} - {{ our_user.favorite_color }} - PW: {{ our_user.password_hash }} - <a href="{{url_for('delete', id=our_user.id)}}">Delete</a>
+    </td>
+    </tr>
+    {% endfor %}
+</table>
 
 
 
